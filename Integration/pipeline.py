@@ -1,14 +1,15 @@
 import sys
 import json
 from pathlib import Path
-
 import cv2
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from Arcface.ranking import rank_faces
 from RetinaFace.detect_crop import detect_and_crop
-from SHQS.shqs_opencv import shqs_score, level_of, soft_enhance
+from SHQS.shqs_opencv import shqs_score, level_of
+from SHQS.stage2_clahe import clahe_enhance
 
 OUTPUT = ROOT / "Pipeline_Output"
 
@@ -82,7 +83,7 @@ def run_pipeline(image_path):
 
         elif decision == "SOFT":
 
-            processed = soft_enhance(crop)
+            processed = clahe_enhance(crop)
             method = "CLAHE"
             status = "READY_FOR_ARCFACE"
 
@@ -98,6 +99,24 @@ def run_pipeline(image_path):
 
         cv2.imwrite(str(destination), processed)
 
+        # STAGE 4: ARCFACE RECOGNITION
+
+        recognition_result = None
+
+        if decision in ["NO", "SOFT"]:
+
+            print("\n===== ARCFACE =====")
+
+            recognition_result = rank_faces(processed, top_k=5, threshold=0.5)
+
+            status = "RECOGNITION_COMPLETED"
+
+            print("Identity:", recognition_result["predicted_identity"])
+
+            print("Cosine similarity:", recognition_result["similarity"])
+
+            print("Recognition result:", recognition_result["status"])
+
         entry.update(
             {
                 "shqs_score": round(float(score), 2),
@@ -106,6 +125,7 @@ def run_pipeline(image_path):
                 "enhancement_method": method,
                 "status": status,
                 "output_image": str(destination),
+                "recognition": recognition_result,
             }
         )
 
