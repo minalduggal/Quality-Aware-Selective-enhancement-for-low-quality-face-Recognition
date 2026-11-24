@@ -6,7 +6,7 @@ import cv2
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from Arcface.ranking import rank_faces
+from ArcFace.ranking import rank_faces
 from RetinaFace.detect_crop import detect_and_crop
 from SHQS.shqs_opencv import shqs_score, level_of
 from SHQS.stage2_clahe import clahe_enhance
