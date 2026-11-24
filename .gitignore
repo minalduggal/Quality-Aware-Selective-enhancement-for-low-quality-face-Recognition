@@ -1,0 +1,40 @@
+# Virtual environments
+.venv*/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Model weights
+*.onnx
+*.pth
+*.pt
+*.ckpt
+weights/
+
+# Dataset and embeddings
+dataset/
+*.npy
+*.npz
+*.mat
+
+# Input and output images
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.webp
+images/
+crops/
+Pipeline_Output/
+*_run/
+
+# Generated results
+*.csv
+*.log
+
+# Environment and credentials
+.env
+.env.*
